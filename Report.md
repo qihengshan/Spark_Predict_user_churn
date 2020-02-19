@@ -242,7 +242,14 @@ corssval = CrossValidator(estimator=pipeline,
                          numFolds=3)
 ```
 
-**最终学习率选择：0.01，其他参数选择默认值**
+**最优参数**
+* stepSize = 0.01
+```python
+model.getEstimatorParamMaps()[ np.argmax(model.avgMetrics) ]
+{Param(parent='GBTClassifier_25a651802674', name='stepSize', doc='Step size (a.k.a. learning rate) in interval (0, 1] for shrinking the contribution of each estimator.'): 0.01,
+ Param(parent='GBTClassifier_25a651802674', name='maxIter', doc='max number of iterations (>= 0).'): 10,
+ Param(parent='GBTClassifier_25a651802674', name='maxDepth', doc='Maximum depth of the tree. (>= 0) E.g., depth 0 means 1 leaf node; depth 1 means 1 internal node + 2 leaf nodes.'): 5}
+```
 
 
 
@@ -251,8 +258,8 @@ corssval = CrossValidator(estimator=pipeline,
 
 | 评估指标 | 最终得分 | 
 | :-----:| :----: | 
-| Accuracy | 0.733 | 
-| F1-Score | 0.726 | 
+| Accuracy | 0.8260869565217391 | 
+| F1-Score | 0.8072463768115942 | 
 
 评估指标得分不提理想，原因数据样本较少，如果我们可以基于相对较大的数据集训练分类器，结果可能会更好些。
 
