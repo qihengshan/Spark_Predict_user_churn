@@ -36,7 +36,7 @@
 使用pyspark完成上述流程，练习、巩固了spark数据处理方面的技能。
 针对本项目，发现的特征重要性如下：
 
-![featureImportance](./images/featureImportance.png)
+![featureImportance](./images/feature-importance-score.png)
 
 
 * 详细报告见 [Report.md](./Report.md)

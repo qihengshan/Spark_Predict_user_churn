@@ -201,7 +201,9 @@ root
 
 * F1-Score (精准率和召回率的调和均值)
 
-![F1-Score](./images/F1-Score.png)
+![维基百科F1-Score](./images/Precisionrecall-F1-score.svg)
+
+![F1-Score-公式](./images/F1-Score.png)
 
 
 ### 模型选择及训练
@@ -210,14 +212,38 @@ root
 
 适合二分类任务
 
-#### 参数
+#### 参数调优
 
-stepSize=0.01 其他参数选择默认值
+使用pyspark网格搜索、交叉验证进行参数调优
 
-* maxIter              // 最大迭代次数
-* impurity("entropy")  //or "gini"
-* maxDepth             //决策树的深度
-* stepSize             //范围是(0, 1]
+| 参数 | 取值 | 参数含义 |
+| :-----| :---- | :----|
+| stepSize | [0.1, 0.01, 0.001] | learning rate |
+| maxIter | [20] | iter times |
+| maxDepth   | [5] | tree depth |
+
+```python
+# 参数调优
+# Train a GBT model.
+gbt = GBTClassifier(labelCol="indexedLabel", featuresCol="indexedFeatures", maxIter=20, stepSize=0.01)
+
+# Chain indexers and GBT in a Pipeline
+pipeline = Pipeline(stages=[labelIndexer, featureIndexer, gbt])
+
+paramGrid= ParamGridBuilder() \
+    .addGrid(gbt.stepSize, [0.1, 0.01, 0.001]) \
+    .addGrid(gbt.maxIter, [20]) \
+    .addGrid(gbt.maxDepth, [5]) \
+    .build()
+
+corssval = CrossValidator(estimator=pipeline,
+                         estimatorParamMaps=paramGrid,
+                         evaluator=MulticlassClassificationEvaluator(),
+                         numFolds=3)
+```
+
+**最终学习率选择：0.01，其他参数选择默认值**
+
 
 
 #### 模型评估值得分
@@ -225,26 +251,29 @@ stepSize=0.01 其他参数选择默认值
 
 | 评估指标 | 最终得分 | 
 | :-----:| :----: | 
-| Accuracy | 0.8 | 
-| F1-Score | 0.745 | 
+| Accuracy | 0.733 | 
+| F1-Score | 0.726 | 
 
 评估指标得分不提理想，原因数据样本较少，如果我们可以基于相对较大的数据集训练分类器，结果可能会更好些。
 
 #### 特征重要性对比图
 
-![featureImportance](./images/featureImportance.png)
+![featureImportance](./images/feature-importance-score.png)
 
 
-可以看到，用户访问Home、Logout、注册时长、降级次数 、添加好友 特征对于用户是否取消服务影响比较大
+可以看到，用户访问Logout、注册时长、查看滚动广告次数 、听歌数量、经常访问Help页、频繁setting 特征对于用户是否取消服务影响比较大
 
 
 ## 结论
 
-应该进一步研究用户访问Home之后的行为，以了解新用户或普通用户是否会流失。
+应该进一步研究用户为什么频繁Logout的行为，以了解新用户或普通用户是否会流失。
 
-* 当常规用户频繁的访问Home，可能在听歌的页面亮点太少，或者没有想要的功能。
+* 当常规用户频繁的访问Logout，可能在听歌的页面亮点太少，或者没有想要的功能，让用户感到失望。
 * 注册长、添加好友导致用户流失，原因可能是内容没有足够频繁地更新，也可能用户量少，互动内容少，导致用户流失。
 * 当新注册的用户倾向于流失时。原因可能是乍一看内容不够吸引人。
+* 广告的质量太低，容易引起反感，也会导致用户流失
+* 经常访问Help页，可能因为功能的易用性不足
+* 频繁使用setting功能，可能因为初始设置不合理
 * 收集更多数据
 * 研究多种机器学习算法，以获得更准确的结果
 
@@ -271,3 +300,4 @@ stepSize=0.01 其他参数选择默认值
 
 * [Spark GBTClassifier 文档](https://spark.apache.org/docs/2.2.0/ml-classification-regression.html)
 * [Spark DataFrame 文档](https://dzone.com/articles/pyspark-dataframe-tutorial-introduction-to-datafra)
+* [维基百科-F1_Score](https://en.wikipedia.org/wiki/F1_score)
