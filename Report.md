@@ -247,7 +247,7 @@ corssval = CrossValidator(estimator=pipeline,
 ```python
 model.getEstimatorParamMaps()[ np.argmax(model.avgMetrics) ]
 {Param(parent='GBTClassifier_25a651802674', name='stepSize', doc='Step size (a.k.a. learning rate) in interval (0, 1] for shrinking the contribution of each estimator.'): 0.01,
- Param(parent='GBTClassifier_25a651802674', name='maxIter', doc='max number of iterations (>= 0).'): 10,
+ Param(parent='GBTClassifier_25a651802674', name='maxIter', doc='max number of iterations (>= 0).'): 20,
  Param(parent='GBTClassifier_25a651802674', name='maxDepth', doc='Maximum depth of the tree. (>= 0) E.g., depth 0 means 1 leaf node; depth 1 means 1 internal node + 2 leaf nodes.'): 5}
 ```
 
